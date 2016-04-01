@@ -2,12 +2,47 @@ import java.net.*;
 
 public class Servidor
 {
-    public static void iniciar()
+    private int vez;
+    private int numJogadores;
+
+    public int getVez()
+    {
+        return vez;
+    }
+
+    public void setVez(int vez)
+    {
+        this.vez = vez;
+    }
+
+    public Servidor getServidor()
+    {
+        return this;
+    }
+
+    public int getNumJogadores()
+    {
+        return numJogadores;
+    }
+
+    public void setNumJogadores(int numJogadores)
+    {
+        this.numJogadores = numJogadores;
+    }
+
+    // Passar a vez para o proximo jogador
+    public int proximoJogador()
+    {
+        return (vez + 1) % numJogadores;
+    }
+
+    // Abrir porta para esperar por conexao
+    public static void iniciar(int porta)
     {
         try
         {
             // Porta na qual o servidor irá "escutar"
-            int ServerPort = 6000;
+            int ServerPort = porta;
 
             //ESTABELECE UM SERVIÇO UDP NA PORTA ESPECIFICADA
             DatagramSocket ds = new DatagramSocket(ServerPort);
@@ -47,11 +82,5 @@ public class Servidor
         {
             System.out.println("-S- O seguinte problema ocorreu : \n" + e.toString());
         }
-    }
-
-    // MÉTODO PRINCIPAL DA CLASSE
-    public static void main (String args[])
-    {
-        iniciar();
     }
 }
