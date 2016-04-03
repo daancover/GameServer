@@ -5,6 +5,7 @@ public class ServerController extends Thread
 {
     int id;
     private Servidor servidor;
+    private Conexao conexao;
 
     public ServerController(int id, Servidor servidor)
     {
@@ -12,8 +13,18 @@ public class ServerController extends Thread
         this.servidor = servidor;
     }
 
+    public Conexao getConexao()
+    {
+        return conexao;
+    }
+
+    public void setConexao(Conexao conexao)
+    {
+        this.conexao = conexao;
+    }
+
     public void run()
     {
-        servidor.iniciar(6001 + id);
+        servidor.iniciar(id, this);
     }
 }
