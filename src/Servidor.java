@@ -57,24 +57,6 @@ public class Servidor
         return (vez + 1) % numJogadores;
     }
 
-    public void fecharConexoes()
-    {
-        for (int i = 0; i < numJogadores; i++)
-        {
-            try
-            {
-                conexoes.get(i).setSocket(conexoes.get(i).getServSocket().accept());
-                //conexoes.get(i).setsServIn(new ObjectInputStream(conexoes.get(i).getSocket().getInputStream()));
-                conexoes.get(i).getsServIn().close();
-                conexoes.get(i).getServSocket().close();
-                conexoes.get(i).getSocket().close();
-            }
-
-            catch(Exception e) {
-            }
-        }
-    }
-
     // Abrir porta para esperar por conexao
     public void iniciar(int id, ServerController thread)
     {
@@ -123,10 +105,10 @@ public class Servidor
                 conexoes.get(id).getSocket().close();
                 System.out.println(" -S- Conexao finalizada...");
 
-                if(msgIn.toString().equals(palavra))
+                /*if(msgIn.toString().equals(palavra))
                 {
                     fecharConexoes();
-                }
+                }*/
             }
 
             catch(Exception e)
