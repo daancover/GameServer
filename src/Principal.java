@@ -1,7 +1,7 @@
-package src;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by daniel on 31/03/16.
@@ -15,10 +15,9 @@ public class Principal
     {
         Servidor servidor = new Servidor();
 
-        ServerController s;
-
         for(int i = 0; i < MAXPLAYERS; i++)
         {
+            final ServerController s;
             s = new ServerController(i, servidor);
             threads.add(s);
             s.start();
