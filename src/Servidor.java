@@ -1,3 +1,5 @@
+package src;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -88,16 +90,26 @@ public class Servidor
 
                 String resposta = "errou";
 
-                if(msgIn.toString().equals(palavra))
-                {
+                if(msgIn.toString().charAt(0) == '~'){
+                  if(msgIn.toString().substring(1).contains("inicio")){
+                    resposta = id + ";Jogador " + id + ";" + (vez == id);
+                    if(vez == id){
+                      resposta += ";" + palavra;
+                    }
+                  }
+                }else{
+                  if(msgIn.toString().equals(palavra))
+                  {
                     resposta = "acertou";
                     jogando = false;
+                  }
                 }
+
 
                 //CRIA UM PACOTE DE SAÍDA PARA ENVIAR MENSAGENS, ASSOCIANDO-O À CONEXÃO (p)
                 ObjectOutputStream sSerOut = new ObjectOutputStream(conexoes.get(id).getSocket().getOutputStream());
                 sSerOut.writeObject(resposta); //ESCREVE NO PACOTE
-                System.out.println(" -S- Enviando mensagem resposta...");
+                System.out.println(" -S- Enviando mensagem resposta...-" + vez + "-" + id);
                 sSerOut.flush(); //ENVIA O PACOTE
 
                 //FINALIZA A CONEXÃO
@@ -123,5 +135,7 @@ public class Servidor
                 catch(Exception ex){}
             }
         }
+
+
     }
 }
