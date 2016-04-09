@@ -75,7 +75,7 @@ public class Servidor
 
                 //ESPERA (BLOQUEADO) POR CONEXÕES
                 conexoes.get(id).setSocket(conexoes.get(id).getServSocket().accept());
-                //RECEBE CONEXÃO E CRIA UM NOVO CANAL (p) NO SENTIDO CONTRÁRIO (SERVIDOR -> CLIENTE)
+                //RECEBE CONEXÃO E CRIA UM NOVO CANAL (p) NO SENTIDO CONTRARIO (SERVIDOR -> CLIENTE)
 //                System.out.println(" -S- Conectado ao cliente ->" + conexoes.get(id).getSocket().toString());
 
                 //CRIA UM PACOTE DE ENTRADA PARA RECEBER MENSAGENS, ASSOCIADO À CONEXÃO (p)
@@ -94,6 +94,9 @@ public class Servidor
                         }
                         inicio = System.currentTimeMillis();
                     }
+                    if(msgIn.toString().substring(1).contains("data:image/png;base64")){
+                        resposta = msgIn.toString().substring(1);
+                    }
                 } else {
                     if (msgIn.toString().equals(palavra)) {
                         resposta = "acertou";
@@ -109,7 +112,7 @@ public class Servidor
                 }
 
 
-                //CRIA UM PACOTE DE SAÍDA PARA ENVIAR MENSAGENS, ASSOCIANDO-O À CONEXÃO (p)
+                //CRIA UM PACOTE DE SAIDA PARA ENVIAR MENSAGENS, ASSOCIANDO-O À CONEXÃO (p)
                 ObjectOutputStream sSerOut = new ObjectOutputStream(conexoes.get(id).getSocket().getOutputStream());
                 sSerOut.writeObject(resposta); //ESCREVE NO PACOTE
 //                System.out.println(" -S- Enviando mensagem resposta...-" + vez + "-" + id);
