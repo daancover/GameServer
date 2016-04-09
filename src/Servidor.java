@@ -12,6 +12,8 @@ public class Servidor
     private String palavra = "mesa";
     private List<Conexao> conexoes = new ArrayList<>();
     private List<ServerController> threads = new ArrayList<>();
+    private long inicio = Long.MAX_VALUE;
+    private long fim = 0;
 
     public Servidor()
     {
@@ -64,8 +66,7 @@ public class Servidor
 
         while(jogando)
         {
-            try
-            {
+            try {
                 int portaServidor = 7000 + id;
 
                 //INICIALIZA UM SERVIÇO DE ESCUTA POR CONEXÕES NA PORTA ESPECIFICADA
@@ -80,40 +81,52 @@ public class Servidor
 
                 //CRIA UM PACOTE DE ENTRADA PARA RECEBER MENSAGENS, ASSOCIADO À CONEXÃO (p)
                 conexoes.get(id).setsServIn(new ObjectInputStream(conexoes.get(id).getSocket().getInputStream()));
-                System.out.println(" -S- Recebendo mensagem...");
+//                System.out.println(" -S- Recebendo mensagem...");
                 Object msgIn = conexoes.get(id).getsServIn().readObject(); //ESPERA (BLOQUEADO) POR UM PACOTE
-                System.out.println(" -S- Recebido: " + msgIn.toString());
+//                System.out.println(" -S- Recebido: " + msgIn.toString());
 
                 String resposta = "errou";
 
-                if(msgIn.toString().equals(palavra))
-                {
-                    resposta = "acertou";
+                if (msgIn.toString().charAt(0) == '~') {
+                    if (msgIn.toString().substring(1).contains("inicio")) {
+                        resposta = id + ";Jogador " + id + ";" + (vez == id);
+                        if (vez == id) {
+                            resposta += ";" + palavra;
+                        }
+                        inicio = System.currentTimeMillis();
+                    }
+                } else {
+                    if (msgIn.toString().equals(palavra)) {
+                        resposta = "acertou";
+                        jogando = false;
+                    }
+                }
+
+                fim = System.currentTimeMillis();
+                if(fim - inicio >= 60000){
+                    System.out.println("Tempo acabou");
+                    resposta = "fim";
                     jogando = false;
                 }
+
 
                 //CRIA UM PACOTE DE SAÍDA PARA ENVIAR MENSAGENS, ASSOCIANDO-O À CONEXÃO (p)
                 ObjectOutputStream sSerOut = new ObjectOutputStream(conexoes.get(id).getSocket().getOutputStream());
                 sSerOut.writeObject(resposta); //ESCREVE NO PACOTE
-                System.out.println(" -S- Enviando mensagem resposta...");
+//                System.out.println(" -S- Enviando mensagem resposta...-" + vez + "-" + id);
                 sSerOut.flush(); //ENVIA O PACOTE
 
                 //FINALIZA A CONEXÃO
                 conexoes.get(id).getServSocket().close();
                 conexoes.get(id).getSocket().close();
-                System.out.println(" -S- Conexao finalizada...");
+//                System.out.println(" -S- Conexao finalizada...");
 
-                /*if(msgIn.toString().equals(palavra))
-                {
-                    fecharConexoes();
-                }*/
             }
-
             catch(Exception e)
             {
                 try
                 {
-                    System.out.println(" -S- O seguinte problema ocorreu : \n" + e.toString());
+//                   System.out.println(" -S- O seguinte problema ocorreu : \n" + e.toString());
                     conexoes.get(id).getServSocket().close();
                     conexoes.get(id).getSocket().close();
                 }
@@ -121,5 +134,6 @@ public class Servidor
                 catch(Exception ex){}
             }
         }
+
     }
 }
