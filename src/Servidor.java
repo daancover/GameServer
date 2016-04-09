@@ -76,13 +76,12 @@ public class Servidor
 
                 //ESPERA (BLOQUEADO) POR CONEXÕES
                 conexoes.get(id).setSocket(conexoes.get(id).getServSocket().accept());
-<<<<<<< HEAD
+
                 //RECEBE CONEXÃO E CRIA UM NOVO CANAL (p) NO SENTIDO CONTRARIO (SERVIDOR -> CLIENTE)
 //                System.out.println(" -S- Conectado ao cliente ->" + conexoes.get(id).getSocket().toString());
-=======
+
                 //RECEBE CONEXÃO E CRIA UM NOVO CANAL (p) NO SENTIDO CONTRÁRIO (SERVIDOR -> CLIENTE)
                 System.out.println(" -S- Conectado ao cliente ->" + conexoes.get(id).getSocket().toString());
->>>>>>> origin/master
 
                 //CRIA UM PACOTE DE ENTRADA PARA RECEBER MENSAGENS, ASSOCIADO À CONEXÃO (p)
                 conexoes.get(id).setsServIn(new ObjectInputStream(conexoes.get(id).getSocket().getInputStream()));
