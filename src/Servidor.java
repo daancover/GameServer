@@ -9,11 +9,13 @@ public class Servidor
     private int vez;
     private int numJogadores;
     private boolean jogando = true;
-    private String palavra = "mesa";
+    private String palavra;
     private List<Conexao> conexoes = new ArrayList<>();
     private List<ServerController> threads = new ArrayList<>();
     private long inicio = Long.MAX_VALUE;
     private long fim = 0;
+    private String[] palavras = new String[]{"mesa", "cadeira", "copo", "computador", "celular", "cama", "garfo", "colher", "camisa", "tv",
+            "guitarra", "carro", "moto", "raquete", "bola", "chave", "mochila", "caderno", "caneta", "tesoura"};
 
     public Servidor()
     {
@@ -24,6 +26,8 @@ public class Servidor
         {
             conexoes.add(new Conexao());
         }
+
+        palavra = palavras[(int)(Math.random() * 20)];
     }
 
     public int getVez()
@@ -70,12 +74,19 @@ public class Servidor
                 int portaServidor = 7000 + id;
 
                 //INICIALIZA UM SERVIÇO DE ESCUTA POR CONEXÕES NA PORTA ESPECIFICADA
-                System.out.println(" -S- Aguardando conexao (P:" + portaServidor + ")...");
+                //System.out.println(" -S- Aguardando conexao (P:" + portaServidor + ")...");
                 conexoes.get(id).setServSocket(new ServerSocket(portaServidor));
-                conexoes.get(id).getServSocket().setSoTimeout(500);
+
+                if(id != 0) {
+                    conexoes.get(id).getServSocket().setSoTimeout(500);
+                }
 
                 //ESPERA (BLOQUEADO) POR CONEXÕES
                 conexoes.get(id).setSocket(conexoes.get(id).getServSocket().accept());
+
+                //RECEBE CONEXÃO E CRIA UM NOVO CANAL (p) NO SENTIDO CONTRARIO (SERVIDOR -> CLIENTE)
+//                System.out.println(" -S- Conectado ao cliente ->" + conexoes.get(id).getSocket().toString());
+
                 //RECEBE CONEXÃO E CRIA UM NOVO CANAL (p) NO SENTIDO CONTRÁRIO (SERVIDOR -> CLIENTE)
                 System.out.println(" -S- Conectado ao cliente ->" + conexoes.get(id).getSocket().toString());
 
@@ -95,6 +106,9 @@ public class Servidor
                         }
                         inicio = System.currentTimeMillis();
                     }
+                    if(msgIn.toString().substring(1).contains("data:image/png;base64")){
+                        resposta = msgIn.toString().substring(1);
+                    }
                 } else {
                     if (msgIn.toString().equals(palavra)) {
                         resposta = "acertou";
@@ -109,8 +123,10 @@ public class Servidor
                     jogando = false;
                 }
 
+                resposta += "~tempo" + (fim-inicio);
 
-                //CRIA UM PACOTE DE SAÍDA PARA ENVIAR MENSAGENS, ASSOCIANDO-O À CONEXÃO (p)
+
+                //CRIA UM PACOTE DE SAIDA PARA ENVIAR MENSAGENS, ASSOCIANDO-O À CONEXÃO (p)
                 ObjectOutputStream sSerOut = new ObjectOutputStream(conexoes.get(id).getSocket().getOutputStream());
                 sSerOut.writeObject(resposta); //ESCREVE NO PACOTE
 //                System.out.println(" -S- Enviando mensagem resposta...-" + vez + "-" + id);
