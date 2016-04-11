@@ -87,8 +87,8 @@ public class Servidor
                 //RECEBE CONEXÃO E CRIA UM NOVO CANAL (p) NO SENTIDO CONTRARIO (SERVIDOR -> CLIENTE)
 //                System.out.println(" -S- Conectado ao cliente ->" + conexoes.get(id).getSocket().toString());
 
-                //RECEBE CONEXÃO E CRIA UM NOVO CANAL (p) NO SENTIDO CONTRÁRIO (SERVIDOR -> CLIENTE)
-                System.out.println(" -S- Conectado ao cliente ->" + conexoes.get(id).getSocket().toString());
+                //RECEBE CONEXÃO E CRIA UM NOVO CANAL (p) NO SENTIDO CONTRARIO (SERVIDOR -> CLIENTE)
+//                System.out.println(" -S- Conectado ao cliente ->" + conexoes.get(id).getSocket().toString());
 
                 //CRIA UM PACOTE DE ENTRADA PARA RECEBER MENSAGENS, ASSOCIADO À CONEXÃO (p)
                 conexoes.get(id).setsServIn(new ObjectInputStream(conexoes.get(id).getSocket().getInputStream()));
@@ -98,13 +98,25 @@ public class Servidor
 
                 String resposta = "errou";
 
+                fim = System.currentTimeMillis();
+
+                System.out.println(fim - inicio);
+                long tempo = fim - inicio;
+                if(fim - inicio >= 60000){
+                    System.out.println("Tempo acabou");
+                    resposta = "fim";
+                    jogando = false;
+                }
+
                 if (msgIn.toString().charAt(0) == '~') {
                     if (msgIn.toString().substring(1).contains("inicio")) {
                         resposta = id + ";Jogador " + id + ";" + (vez == id);
                         if (vez == id) {
                             resposta += ";" + palavra;
                         }
-                        inicio = System.currentTimeMillis();
+                        resposta += ";" + (tempo < 0 ? 0 : tempo);
+                        if(inicio < 0)
+                            inicio = System.currentTimeMillis();
                     }
                     if(msgIn.toString().substring(1).contains("data:image/png;base64")){
                         resposta = msgIn.toString().substring(1);
@@ -116,20 +128,11 @@ public class Servidor
                     }
                 }
 
-                fim = System.currentTimeMillis();
-                if(fim - inicio >= 60000){
-                    System.out.println("Tempo acabou");
-                    resposta = "fim";
-                    jogando = false;
-                }
-
-                resposta += "~tempo" + (fim-inicio);
-
 
                 //CRIA UM PACOTE DE SAIDA PARA ENVIAR MENSAGENS, ASSOCIANDO-O À CONEXÃO (p)
                 ObjectOutputStream sSerOut = new ObjectOutputStream(conexoes.get(id).getSocket().getOutputStream());
                 sSerOut.writeObject(resposta); //ESCREVE NO PACOTE
-//                System.out.println(" -S- Enviando mensagem resposta...-" + vez + "-" + id);
+                System.out.println(" -S- Enviando mensagem resposta...-" + resposta);
                 sSerOut.flush(); //ENVIA O PACOTE
 
                 //FINALIZA A CONEXÃO
